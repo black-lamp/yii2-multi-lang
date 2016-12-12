@@ -11,12 +11,28 @@ use yii\base\Widget;
  *
  * @author RuslanSaiko
  */
-class LanguageListWidget extends Widget {
+class LanguageListWidget extends Widget 
+{
+    /**
+     * @var array Options.
+     */
+    public $options = ['class' => 'btn btn-sm btn-warning dropdown-toggle'];
 
+    /**
+     * @inheritdoc
+     */
     public function run() {
-        $languages = Language::findAll(['active' => true]);
-        $current = Language::findOne(['lang_id' => Yii::$app->language]);
-        return $this->render('list', ['current' => $current, 'languages' => $languages]);
+        $current = Language::getCurrent();
+        $languages = Language::find()
+            ->where(['active' => true])
+            ->andWhere(['<>', 'id', $current->id])
+            ->all();
+
+        return $this->render('list', [
+            'current' => $current, 
+            'languages' => $languages,
+            'options' => $this->options
+        ]);
     }
 
 }
