@@ -1,4 +1,4 @@
-`<?php
+<?php
 use bl\multilang\entities\Language;
 use yii\helpers\ArrayHelper;
 use yii\helpers\Html;

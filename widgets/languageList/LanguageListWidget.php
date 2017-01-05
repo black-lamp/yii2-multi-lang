@@ -11,8 +11,13 @@ use yii\base\Widget;
  *
  * @author RuslanSaiko
  */
-class LanguageListWidget extends Widget 
+class LanguageListWidget extends Widget
 {
+    /**
+     * @var bool Is showing current language.
+     */
+    public $showCurrent = false;
+
     /**
      * @var array Options.
      */
@@ -21,15 +26,19 @@ class LanguageListWidget extends Widget
     /**
      * @inheritdoc
      */
-    public function run() {
+    public function run()
+    {
         $current = Language::getCurrent();
-        $languages = Language::find()
-            ->where(['active' => true])
-            ->andWhere(['<>', 'id', $current->id])
-            ->all();
+        $query = Language::find()->where(['active' => true]);
+
+        if (!$this->showCurrent) {
+            $query->andWhere(['<>', 'id', $current->id]);
+        }
+
+        $languages = $query->all();
 
         return $this->render('list', [
-            'current' => $current, 
+            'current' => $current,
             'languages' => $languages,
             'options' => $this->options
         ]);
