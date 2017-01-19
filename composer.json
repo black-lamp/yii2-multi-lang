@@ -1,8 +1,13 @@
 {
   "name": "black-lamp/yii2-multi-lang",
   "description": "Yii2 url manager with supporting multi languages.",
-  "keywords": ["yii2", "UrlManager", "multi", "language"],
+  "keywords": ["yii2", "url", "manager", "multi", "language", "languages"],
   "type": "yii2-extension",
+  "license": "GPL-3.0",
+  "support": {
+    "source": "https://github.com/black-lamp/yii2-multi-lang",
+    "issues": "https://github.com/black-lamp/yii2-multi-lang/issues"
+  },
   "authors": [
     {
       "name": "Saiko Ruslan",
@@ -11,10 +16,15 @@
     {
       "name": "Gutsulyak Vadim",
       "email": "guts.vadim@gmail.com"
+    },
+    {
+      "name": "Vladimir Kuprienko",
+      "email": "vldmr.kuprienko@gmail.com",
+      "role": "developer"
     }
   ],
   "require": {
-    "yiisoft/yii2": ">=2.0.4"
+    "yiisoft/yii2": "^2.0.4"
   },
   "autoload": {
     "psr-4": {
