@@ -17,6 +17,10 @@ use yii\db\ActiveRecord;
  */
 class Language extends ActiveRecord {
 
+    private static $_currentLangCode;
+    private static $_currentLang;
+    private static $_defaultLang;
+
     public static function tableName() {
         return 'language';
     }
@@ -25,31 +29,35 @@ class Language extends ActiveRecord {
      * @return Language
      */
     public static function getDefault() {
-        return Language::findOne([
-            'default' => true
-        ]);
+        if(empty(self::$_defaultLang)) {
+            self::$_defaultLang = Language::findOne([
+                'default' => true
+            ]);
+        }
+        return self::$_defaultLang;
     }
 
     /**
      * @return Language Current language, or default
      */
     public static function getCurrent() {
-        $language = Language::findOne([
-            'lang_id' => Yii::$app->language
-        ]);
-
-        if(!$language) {
-            $language = static::getDefault();
+        if(empty(self::$_currentLang) || self::$_currentLangCode != Yii::$app->language) {
+            self::$_currentLangCode = Yii::$app->language;
+            self::$_currentLang = Language::findOne([
+                'lang_id' => self::$_currentLangCode
+            ]);
         }
-
-        return $language;
+        if(empty(self::$_currentLang)) {
+            return static::getDefault();
+        }
+        return self::$_currentLang;
     }
 
     public static function findOrDefault($languageId) {
         if (empty($languageId) || !$language = Language::findOne($languageId)) {
             $language = Language::find()
-                    ->where(['lang_id' => \Yii::$app->sourceLanguage])
-                    ->one();
+                ->where(['lang_id' => \Yii::$app->sourceLanguage])
+                ->one();
         }
         return $language;
     }
