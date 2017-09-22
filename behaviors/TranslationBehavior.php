@@ -3,6 +3,7 @@ namespace bl\multilang\behaviors;
 
 use Yii;
 use yii\base\Behavior;
+use yii\db\ActiveRecord;
 use yii\db\ActiveRecordInterface;
 
 use bl\multilang\entities\Language;
@@ -24,7 +25,7 @@ use bl\multilang\entities\Language;
  *      ];
  *  }
  * ```
- * @property ActiveRecordInterface $owner
+ * @property ActiveRecord $owner
  * @property string $translationClass
  * @property string $relationColumn
  * @property string $languageColumn
@@ -47,56 +48,64 @@ class TranslationBehavior extends Behavior
      */
     public $languageColumn = 'language_id';
 
+    /**
+     * @param int|null $languageId
+     * @return \yii\db\ActiveQuery
+     */
+    public function getTranslation($languageId = null) {
+        return $this->owner->hasOne($this->translationClass, [$this->relationColumn => $this->owner->tableSchema->primaryKey[0]])
+            ->andOnCondition([$this->languageColumn => $languageId ?? Language::getCurrent()->id]);
+    }
 
     /**
      * Method for getting translation from database
      * 
      * @param null|integer $languageId
      */
-    public function getTranslation($languageId = null)
-    {
-        /* @var $modelClass ActiveRecordInterface */
-        $modelClass = $this->translationClass;
-
-        if(!empty($languageId)) {
-            /* @var $language ActiveRecordInterface */
-            if($language = Language::findOne($languageId)) {
-                /* @var $translation ActiveRecordInterface */
-                $translation = $modelClass::findOne([
-                    $this->languageColumn => $language->getPrimaryKey(),
-                    $this->relationColumn => $this->owner->getPrimaryKey()
-                ]);
-                
-                return $translation;
-            }
-        }
-
-        $language = Language::findOne(['lang_id' => Yii::$app->language]);
-
-        // try to find translation on current language
-        $translation = $modelClass::findOne([
-            $this->languageColumn => $language->getPrimaryKey(),
-            $this->relationColumn => $this->owner->getPrimaryKey()
-        ]);
-
-        if(!$translation) {
-            // get default language
-            $language = Language::findOne(['default' => true]);
-
-            // try to find translation on default language
-            $translation =  $modelClass::findOne([
-                $this->languageColumn => $language->getPrimaryKey(),
-                $this->relationColumn => $this->owner->getPrimaryKey()
-            ]);
-
-            if(!$translation) {
-                // find any translation
-                $translation =  $modelClass::findOne([
-                    $this->relationColumn => $this->owner->getPrimaryKey()
-                ]);
-            }
-        }
-
-        return $translation;
-    }
+//    public function getTranslation($languageId = null)
+//    {
+//        /* @var $modelClass ActiveRecordInterface */
+//        $modelClass = $this->translationClass;
+//
+//        if(!empty($languageId)) {
+//            /* @var $language ActiveRecordInterface */
+//            if($language = Language::findOne($languageId)) {
+//                /* @var $translation ActiveRecordInterface */
+//                $translation = $modelClass::findOne([
+//                    $this->languageColumn => $language->getPrimaryKey(),
+//                    $this->relationColumn => $this->owner->getPrimaryKey()
+//                ]);
+//
+//                return $translation;
+//            }
+//        }
+//
+//        $language = Language::findOne(['lang_id' => Yii::$app->language]);
+//
+//        // try to find translation on current language
+//        $translation = $modelClass::findOne([
+//            $this->languageColumn => $language->getPrimaryKey(),
+//            $this->relationColumn => $this->owner->getPrimaryKey()
+//        ]);
+//
+//        if(!$translation) {
+//            // get default language
+//            $language = Language::findOne(['default' => true]);
+//
+//            // try to find translation on default language
+//            $translation =  $modelClass::findOne([
+//                $this->languageColumn => $language->getPrimaryKey(),
+//                $this->relationColumn => $this->owner->getPrimaryKey()
+//            ]);
+//
+//            if(!$translation) {
+//                // find any translation
+//                $translation =  $modelClass::findOne([
+//                    $this->relationColumn => $this->owner->getPrimaryKey()
+//                ]);
+//            }
+//        }
+//
+//        return $translation;
+//    }
 }
